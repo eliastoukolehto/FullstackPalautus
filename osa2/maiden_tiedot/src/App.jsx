@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import countriesService from './services/countries'
+import weatherService from './services/weather'
 
 const Country = ({ country }) => {
   //console.log('rendering country ' + country)
@@ -11,10 +12,12 @@ const Country = ({ country }) => {
   const hook = () => {
     countriesService
       .getOne(country.toLowerCase())
-      .then(response =>
+      .then(response => {
         setInfo(response)
-      )
+      })
       console.log('recieved ' + country)
+
+    
   }
   
   useEffect(hook,[country])
@@ -31,14 +34,45 @@ const Country = ({ country }) => {
       <Languages languages={Object.values(info.languages)}/>
       <br />
       <img src={info.flags.png} alt="country_flag_here" />
+      <Weather capital={info.capital[0]}/>
       </div>
+      
+      
+      
+    )
+  }
+
+
+
+const Weather = ({ capital }) => {
+  const [weather, setWeather] = useState(null)
+    if (!weather) {
+      weatherService
+      .getWeather(capital)
+      .then(weatherResponse => 
+        setWeather(weatherResponse)
+      )
+        return null
+    }
+    console.log(`weather icon url: ${`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}`)
+    return(
+
+      <div>
+      <h2>weather in {capital}</h2>
+      <div>Temperature: {Math.round(((weather.main.temp)-272.15)*100)/100} Celcius</div>
+      
+      <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="weather icon here" />
+      <div>wind: {weather.wind.speed} m/s</div>
+      </div>
+      
       
       
     )
 
 }
 
-const Countries = ({ countries }) => {
+
+const Countries = ({ countries, chooseCountry }) => {
   if (countries.length === 1) {
     return <Country country={countries[0].name.common}/>
   }
@@ -51,7 +85,9 @@ const Countries = ({ countries }) => {
   }
   return (
     countries.map(country => 
-      <div key={country.name.common}>{country.name.common} </div>
+      <div key={country.name.common}>{country.name.common} <button
+      onClick={() => chooseCountry(country.name.common)}
+      > Show </button> </div>
   )
   
   )
@@ -71,7 +107,6 @@ const Languages = ( {languages} ) => {
 const App = () => { 
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
-  const [search, setSearch] = useState('')
 
   const hook = () => {
     countriesService
@@ -89,19 +124,22 @@ const App = () => {
                         .includes(filter.toUpperCase())
   )
 
-  const handleSearchChange = (event) => {
+  const handleFilterChange = (event) => {
     const search = event.target.value
-    setSearch(search)
     setFilter(search)
    
+  }
+
+  const chooseCountry = (name) => {
+    setFilter(name)
   }
 
 
   return (
     <div>
       find countries: <input
-        onChange={handleSearchChange} />
-      <Countries countries={countriesToShow}/>
+        onChange={handleFilterChange} />
+      <Countries countries={countriesToShow} chooseCountry={chooseCountry}/>
 
     </div>
   )
