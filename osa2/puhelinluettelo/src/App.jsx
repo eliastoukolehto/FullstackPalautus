@@ -85,7 +85,16 @@ const App = () => {
           }, 5000)
           setNewNumber('')
           setNewName('')
-        })
+      })
+      .catch(error => {
+        console.log(error.response.data)
+        setStyle('fail')
+        setMessage(error.response.data.error)
+        setTimeout(() => {          
+          setMessage(null) 
+          setStyle('success')       
+        }, 5000)
+      })
 
   }}
 
