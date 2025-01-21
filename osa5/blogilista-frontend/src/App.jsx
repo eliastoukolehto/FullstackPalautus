@@ -60,6 +60,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
   }
 
   const addBlog = (blogObject) => {

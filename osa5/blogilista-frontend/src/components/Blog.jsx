@@ -31,7 +31,7 @@ const Blog = ({ blog, updateBlog, user, removeBlog }) => {
   return (
     <div>
       <div style={{ ...blogStyle, ...hideWhenView }}>
-        <div>
+        <div >
           {blog.title} {blog.author} <button onClick={toggleView}>show</button>
         </div>
       </div>
