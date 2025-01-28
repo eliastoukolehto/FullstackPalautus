@@ -1,26 +1,22 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { deleteBlog, likeBlog } from '../reducers/blogReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import { commentBlog, deleteBlog, likeBlog } from '../reducers/blogReducer'
+import { useNavigate } from 'react-router-dom'
+import { Table, Form, Button } from 'react-bootstrap'
 
-const Blog = ({ blog, user }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
+const Blog = ({ blog }) => {
+  const user = useSelector(state => state.user)
   const dispatch = useDispatch()
-  const [view, setView] = useState(false)
-  const hideWhenView = { display: view ? 'none' : '' }
-  const showWhenView = { display: view ? '' : 'none' }
+  const [comment, setComment] = useState('')
+  const navigate = useNavigate()
+
+  if (!blog) {
+    return null
+  }
+
   const showWhenOwner = {
     display: user.username === blog.user.username ? '' : 'none',
-  }
-  //console.log('user: '+ JSON.stringify(user) + ' blog user: ' + blog.user)
-  const toggleView = () => {
-    setView(!view)
   }
 
   const addLike = () => {
@@ -28,31 +24,42 @@ const Blog = ({ blog, user }) => {
   }
   const handleRemove = () => {
     dispatch(deleteBlog(blog))
+    navigate('/')
+  }
+  const handleComment = () => {
+    dispatch(commentBlog(blog, comment))
   }
 
   return (
     <div>
-      <div style={{ ...blogStyle, ...hideWhenView }}>
-        <div>
-          {blog.title} {blog.author} <button onClick={toggleView}>show</button>
-        </div>
+      <h2>{blog.title} {blog.author}</h2>
+      <div><a href={blog.url}>{blog.url}</a></div>
+      <div>
+        likes: {blog.likes} <button onClick={addLike}>like</button>
       </div>
-      <div
-        style={{ ...blogStyle, ...showWhenView }}
-        className="showBlogContent"
-      >
-        <div>
-          {blog.title} {blog.author} <button onClick={toggleView}>hide</button>
-          <div>{blog.url} </div>
-          <div>
-            likes: {blog.likes} <button onClick={addLike}>like</button>
-          </div>
-          <div>{blog.user.username}</div>
-          <button onClick={handleRemove} style={showWhenOwner}>
-            remove
-          </button>
-        </div>
-      </div>
+      <div>added by {blog.user.username}</div>
+      <button onClick={handleRemove} style={showWhenOwner}>
+        remove
+      </button>
+      <br /><br />
+      <h5>Comments</h5>
+      <Form onSubmit={handleComment}>
+        <Form.Group>
+          <Form.Control
+            type="text"
+            value={comment}
+            onChange={({ target }) => setComment(target.value)}
+          />
+          <Button type="submit" variant='dark'>add comment</Button>
+        </Form.Group>
+      </Form>
+      {blog.comments &&(
+        <ul>
+          {blog.comments.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
@@ -60,6 +67,4 @@ const Blog = ({ blog, user }) => {
 export default Blog
 
 Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 }
