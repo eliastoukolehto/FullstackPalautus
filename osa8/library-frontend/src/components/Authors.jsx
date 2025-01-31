@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { ALL_AUTHORS, EDIT_AUTHOR } from './queries'
+import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 import { useState } from 'react'
 
 const Authors = (props) => {
@@ -13,7 +13,6 @@ const Authors = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
-
     editAuthor({ variables: {name, setBornTo: parseInt(born) } })
 
     setName('')
