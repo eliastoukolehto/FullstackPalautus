@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
   },
   favoriteGenre: {
     type: String,
-  },
+  }
 })
 
 schema.plugin(uniqueValidator)
