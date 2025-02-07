@@ -9,6 +9,15 @@ router.get('/', (_req, res) => {
   res.send(patientsService.getPatientsSafe());
 });
 
+router.get('/:id', (req, res) => {
+  const patient = patientsService.findById(req.params.id);
+  if (patient === undefined) {
+    res.status(400).send({ error: 'invalid patient id' });
+  } else {
+    res.send(patient);
+  }
+});
+
 router.post('/', (req, res) => {
   try {
     const newPatient = toNewPatient(req.body);

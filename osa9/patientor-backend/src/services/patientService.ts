@@ -14,11 +14,20 @@ const getPatientsSafe = (): PatientSafe[] => {
 const addPatient = ( patient: NewPatient ): Patient => {
   const id = uuid();
   const newPatient = {
-    ...patient, id: id
+    ...patient, id: id, entries: []
   };
 
   patients.push(newPatient);
   return newPatient;
 };
 
-export default { getPatientsSafe, addPatient};
+const findById = ( id: string ): Patient | undefined => {
+  const patient =  patients.find(p => p.id === id);
+  if (!patient) {
+    return undefined;
+  } else {
+    return patient;
+  }
+};
+
+export default { getPatientsSafe, addPatient, findById};

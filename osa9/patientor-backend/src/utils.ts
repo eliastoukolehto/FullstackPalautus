@@ -6,8 +6,13 @@ export const NewPatientSchema = z.object({
   dateOfBirth: z.string().date(),
   ssn: z.string(),
   gender:  z.nativeEnum(Gender),
-  occupation: z.string()
+  occupation: z.string(),
 });
+
+/* const baseEntrySchema = z.object({
+
+})
+ */
 
 export const toNewPatient = (object: unknown): NewPatient => {
   return NewPatientSchema.parse(object);
