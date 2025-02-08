@@ -13,6 +13,7 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
+
 interface Discharge {
   date: string;
   criteria: string;
@@ -69,3 +70,7 @@ export interface Patient {
 export type PatientSafe = Omit<Patient, 'entries' | 'ssn' >;
 
 export type NewPatient = Omit<Patient, 'id' | 'entries' >;
+
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type NewEntry = UnionOmit<Entry, 'id'>;

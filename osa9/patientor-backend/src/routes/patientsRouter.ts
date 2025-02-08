@@ -1,6 +1,6 @@
 import express from "express";
 import patientsService from '../services/patientService';
-import { toNewPatient } from "../utils";
+import { toNewEntry, toNewPatient } from "../utils";
 import { z } from 'zod';
 
 const router = express.Router();
@@ -24,6 +24,25 @@ router.post('/', (req, res) => {
     const addedPatient = patientsService.addPatient(newPatient);
     res.json(addedPatient);
 
+  } catch (error: unknown) {
+    if (error instanceof z.ZodError) {
+      res.status(400).send({ error: error.issues });
+    } else {
+      res.status(400).send({ error: 'unknown error' });
+    }
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const newEntry = toNewEntry(req.body);
+    const patient = patientsService.findById(req.params.id);
+    if (patient === undefined) {
+      res.status(400).send({ error: 'invalid patient id' });
+    } else {
+      const updatedPatient = patientsService.addEntry(newEntry, patient);
+      res.json(updatedPatient);
+  }
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       res.status(400).send({ error: error.issues });
